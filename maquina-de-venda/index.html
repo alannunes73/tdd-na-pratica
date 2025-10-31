@@ -15,16 +15,25 @@
     <script src="https://code.jquery.com/qunit/qunit-1.18.0.js"></script>
 
     <script>
-      function calcularTroco(precoDoProduto, valorPago) {
+      function calcularTroco(precoDoProduto, valorPago, estoque) {
         let troco = []
         let diferenca = valorPago - precoDoProduto
         const cedulas = [100, 50, 20, 10, 5, 2, 1]
 
+        // se n for passado estoque -> estoque ilimitado
+        if (!estoque) {
+          estoque = {100: Infinity, 50: Infinity, 20: Infinity, 10: Infinity, 5: Infinity, 2: Infinity, 1: Infinity}
+        } else {
+          // Cria uma cópia do estoque para não modificar o original
+          estoque = {...estoque}
+        }
+
         if(diferenca != 0) { // Precisa fornecer algum troco?
           for (let i = 0; i<cedulas.length; i++) {
-            while (diferenca >= cedulas[i]){
+            while (diferenca >= cedulas[i] && estoque[cedulas[i]] > 0){
                 troco.push(cedulas[i])
                 diferenca -= cedulas[i]
+                estoque[cedulas[i]]--
             }
           }
         }
@@ -55,7 +64,7 @@
       })
       // novo teste
       test('calcularTroco(20, 100, {100: 1, 50: 0, 20: 5, 10: 10, 5: 10, 2: 10, 1: 10}) deve retornar [20, 20, 20, 20]', (assert) => {
-        const estoque = {100: 1, 50: 0, 20: 5, 10: 10, 5: 0, 2: 0, 1: 0}
+        const estoque = {100: 1, 50: 0, 20: 5, 10: 10, 5: 10, 2: 10, 1: 10}
         const trocoCalculado = calcularTroco(20, 100, estoque)
         const trocoEsperado = [20, 20, 20, 20]
         assert.deepEqual(trocoCalculado, trocoEsperado, 'Deve usar 4 cédulas de 20 quando não há cédulas de 50 disponíveis')
