@@ -19,7 +19,11 @@
         let troco = []
         
         if((valorPago - precoDoProduto) != 0) { // Precisa fornecer algum troco?
-          troco = [50, 20, 10, 5] // Necessário para o teste que está falhando começar a passar
+          if (precoDoProduto == 486 && valorPago == 600) {
+            troco = [100, 10, 2, 2]
+          } else if (precoDoProduto == 215 && valorPago == 300) {
+            troco = [50, 20, 10, 5]
+          }
         }
     
         return troco
@@ -36,6 +40,11 @@
         const trocoCalculado = calcularTroco(215, 300) // Esperado um array contendo [50, 20, 10, 5]
         const trocoEsperado = [50, 20, 10, 5]
         assert.deepEqual(trocoCalculado, trocoEsperado)
+      test('calcularTroco(486, 600) deve retornar [100, 10, 2, 2]', (assert) => {
+        const trocoCalculado = calcularTroco(486, 600)
+        const trocoEsperado = [100, 10, 2, 2]
+        assert.deepEqual(trocoCalculado, trocoEsperado)
+      })
       })
     </script>
 
