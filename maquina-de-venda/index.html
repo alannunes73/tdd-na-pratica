@@ -53,6 +53,13 @@
         const trocoEsperado = [100, 50, 20, 10, 5, 2, 1]
         assert.deepEqual(trocoCalculado, trocoEsperado)
       })
+      // novo teste
+      test('calcularTroco(20, 100, {100: 1, 50: 0, 20: 5, 10: 10, 5: 10, 2: 10, 1: 10}) deve retornar [20, 20, 20, 20]', (assert) => {
+        const estoque = {100: 1, 50: 0, 20: 5, 10: 10, 5: 0, 2: 0, 1: 0}
+        const trocoCalculado = calcularTroco(20, 100, estoque)
+        const trocoEsperado = [20, 20, 20, 20]
+        assert.deepEqual(trocoCalculado, trocoEsperado, 'Deve usar 4 cédulas de 20 quando não há cédulas de 50 disponíveis')
+      })
     </script>
 
   </body>
