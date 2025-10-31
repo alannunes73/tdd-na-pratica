@@ -15,30 +15,41 @@
     <script src="https://code.jquery.com/qunit/qunit-1.18.0.js"></script>
 
     <script>
-      function calcularTroco(precoDoProduto, valorPago, estoque) {
-        let troco = []
-        let diferenca = valorPago - precoDoProduto
-        const cedulas = [100, 50, 20, 10, 5, 2, 1]
+        const CEDULAS = [100, 50, 20, 10, 5, 2, 1]
 
         // se n for passado estoque -> estoque ilimitado
-        if (!estoque) {
-          estoque = {100: Infinity, 50: Infinity, 20: Infinity, 10: Infinity, 5: Infinity, 2: Infinity, 1: Infinity}
-        } else {
-          // Cria uma cópia do estoque para não modificar o original
-          estoque = {...estoque}
+        function prepararEstoque(estoque) {
+          if (!estoque) {
+            return {100: Infinity, 50: Infinity, 20: Infinity, 10: Infinity, 5: Infinity, 2: Infinity, 1: Infinity}
+          }
+          return {...estoque}
         }
 
-        if(diferenca != 0) { // Precisa fornecer algum troco?
-          for (let i = 0; i<cedulas.length; i++) {
-            while (diferenca >= cedulas[i] && estoque[cedulas[i]] > 0){
-                troco.push(cedulas[i])
-                diferenca -= cedulas[i]
-                estoque[cedulas[i]]--
+        function selecionarCedulas(valorTroco, estoque) {
+            const troco = []
+            let valorRestante = valorTroco
+        
+            for (let i = 0; i < CEDULAS.length; i++) {
+                const cedula = CEDULAS[i]
+                
+                while (valorRestante >= cedula && estoque[cedula] > 0) {
+                    troco.push(cedula)
+                    valorRestante -= cedula
+                    estoque[cedula]--
+                }
             }
-          }
+            return troco
         }
-        return troco
-      }
+
+        function calcularTroco(precoDoProduto, valorPago, estoque) {
+            const valorTroco = valorPago - precoDoProduto
+
+            if (valorTroco == 0){
+                return []
+            }
+            const estoqueDisponivel = prepararEstoque(estoque)
+            return selecionarCedulas(valorTroco, estoqueDisponivel)
+        }
     </script>
 
     <script>
@@ -67,7 +78,7 @@
         const estoque = {100: 1, 50: 0, 20: 5, 10: 10, 5: 10, 2: 10, 1: 10}
         const trocoCalculado = calcularTroco(20, 100, estoque)
         const trocoEsperado = [20, 20, 20, 20]
-        assert.deepEqual(trocoCalculado, trocoEsperado, 'Deve usar 4 cédulas de 20 quando não há cédulas de 50 disponíveis')
+        assert.deepEqual(trocoCalculado, trocoEsperado)
       })
     </script>
 
